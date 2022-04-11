@@ -16,8 +16,6 @@ import com.deny.pokemongo.viewmodel.MainViewModel
 class PokemonsFragment : Fragment() {
 
     private var _binding: FragmentPokemonsBinding? = null
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -38,8 +36,13 @@ class PokemonsFragment : Fragment() {
         }
 
         binding.buttonProcurarPokemon.setOnClickListener(View.OnClickListener {
-            val action = PokemonsFragmentDirections.actionPokemonsFragmentToSelectedPokemonFragment(binding.textProcurarPokemon.text.toString())
-            findNavController().navigate(action)
+            var auxTextProcurarPokemon = binding.textProcurarPokemon.text.toString()
+            if (!auxTextProcurarPokemon.isEmpty()){
+                val action = PokemonsFragmentDirections.actionPokemonsFragmentToSelectedPokemonFragment(binding.textProcurarPokemon.text.toString())
+                findNavController().navigate(action)
+            } else{
+                Toast.makeText(requireContext(), "Digite alguma coisa", Toast.LENGTH_SHORT).show()
+            }
         })
 
         return view

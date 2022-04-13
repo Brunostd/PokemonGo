@@ -92,6 +92,7 @@ class PokemonsFragment : Fragment() {
                                         if (pokemons != null) {
                                             Log.e("...", pokemons.next)
                                             pokemonAdapter.setData(pokemons.results)
+                                            Toast.makeText(requireContext(), "Carregando toda lista", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                     override fun onFailure(call: Call<PokemonModel>, t: Throwable) {

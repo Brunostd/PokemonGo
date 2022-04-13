@@ -85,7 +85,7 @@ class PokemonsFragment : Fragment() {
                             if(auxContador == 1){
 
                                 var service = retrofit.create(ApiService::class.java)
-                                var call: Call<PokemonModel> = service.nextPokemons(500, 500)
+                                var call: Call<PokemonModel> = service.nextPokemons(20, 1105)
                                 call.enqueue(object : Callback<PokemonModel> {
                                     override fun onResponse(call: Call<PokemonModel>, response: Response<PokemonModel>) {
                                         var pokemons = response.body()

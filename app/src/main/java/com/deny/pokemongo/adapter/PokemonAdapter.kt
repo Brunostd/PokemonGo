@@ -11,7 +11,7 @@ import com.deny.pokemongo.R
 import com.deny.pokemongo.model.pokemons.MoreResults
 import com.deny.pokemongo.ui.fragments.PokemonsFragmentDirections
 
-class PokemonAdapter(var listPokemons: List<MoreResults>): RecyclerView.Adapter<PokemonAdapter.MyViewHolder>() {
+class PokemonAdapter(var listPokemons: ArrayList<MoreResults>): RecyclerView.Adapter<PokemonAdapter.MyViewHolder>() {
     inner class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         lateinit var sendName: String
@@ -39,6 +39,11 @@ class PokemonAdapter(var listPokemons: List<MoreResults>): RecyclerView.Adapter<
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(listPokemons[position])
+    }
+
+    fun setData(newList: ArrayList<MoreResults>){
+        listPokemons.addAll(newList)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = listPokemons.size

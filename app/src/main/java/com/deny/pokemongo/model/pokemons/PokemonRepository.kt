@@ -12,7 +12,7 @@ class PokemonRepository {
 
     var pokemonModel = MutableLiveData<PokemonModel>()
 
-    fun getPokemons(): MutableLiveData<PokemonModel>{
+    fun getPokemons(auxOffSet: Int): MutableLiveData<PokemonModel>{
 
         var retrofit = Retrofit.Builder()
             .baseUrl("https://pokeapi.co/api/v2/")
@@ -20,7 +20,7 @@ class PokemonRepository {
             .build()
 
         var service = retrofit.create(ApiService::class.java)
-        var call: Call<PokemonModel> = service.getPokemons()
+        var call: Call<PokemonModel> = service.nextPokemons(auxOffSet, 10)
 
         call.enqueue(object : Callback<PokemonModel> {
             override fun onResponse(call: Call<PokemonModel>, response: Response<PokemonModel>) {

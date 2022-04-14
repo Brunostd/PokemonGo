@@ -9,9 +9,6 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("pokemon/")
-    fun getPokemons(): Call<PokemonModel>
-
     @GET("pokemon/{selected}")
     fun getSelectedPokemon(@Path("selected") selectedPokemon: String): Call<InfoModel>
 

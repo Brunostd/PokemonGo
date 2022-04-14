@@ -29,6 +29,7 @@ class PokemonsFragment : Fragment() {
     private val binding get() = _binding!!
 
     var auxContador: Int = 0
+    var auxOffSet: Int = 0
 
     lateinit var manager: LinearLayoutManager
     lateinit var pokemonAdapter: PokemonAdapter
@@ -47,65 +48,19 @@ class PokemonsFragment : Fragment() {
         _binding = FragmentPokemonsBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        Toast.makeText(requireContext(), "Por favor, aguarde enquanto\n buscamos os dados no servidor", Toast.LENGTH_LONG).show()
-
         val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        viewModel.getPokemons()?.observe(viewLifecycleOwner){ value ->
+        viewModel.nextPokemons(auxOffSet)?.observe(viewLifecycleOwner){ value ->
 
             binding.textViewTotalPokemons.text = value.count.toString()
-
             // RecyclerView
             manager = binding.recyclerListPokemons.layoutManager as LinearLayoutManager
             pokemonAdapter = PokemonAdapter(value.results)
             binding.recyclerListPokemons.adapter = pokemonAdapter
 
-            // Gambiarra scroll infinity: obs(tentar torna mais dinamico)
-            var retrofit = Retrofit.Builder()
-                .baseUrl("https://pokeapi.co/api/v2/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-
-            binding.recyclerListPokemons.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
-                    visibleItemCount = manager.childCount
-                    totalItemCount = manager.itemCount
-                    pastVisiblesItems = manager.findFirstCompletelyVisibleItemPosition()
-
-                    if (loading){
-                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-                            loading = false
-                            //Log.e("...", "Last Item Wow !")
-                            // Do pagination.. i.e. fetch new data
-
-                            auxContador+=1
-                            if(auxContador == 1){
-
-                                var service = retrofit.create(ApiService::class.java)
-                                var call: Call<PokemonModel> = service.nextPokemons(20, 1105)
-                                call.enqueue(object : Callback<PokemonModel> {
-                                    override fun onResponse(call: Call<PokemonModel>, response: Response<PokemonModel>) {
-                                        var pokemons = response.body()
-                                        if (pokemons != null) {
-                                            Log.e("...", pokemons.next)
-                                            pokemonAdapter.setData(pokemons.results)
-                                            Toast.makeText(requireContext(), "Carregando toda lista", Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
-                                    override fun onFailure(call: Call<PokemonModel>, t: Throwable) {
-                                    }
-                                })
-                            }
-
-                            loading = true
-                        }
-                    }
-                }
-            })
         }
+
+        scrollInfinity(viewModel)
 
         binding.buttonProcurarPokemon.setOnClickListener(View.OnClickListener {
             var auxTextProcurarPokemon = binding.textProcurarPokemon.text.toString()
@@ -118,6 +73,40 @@ class PokemonsFragment : Fragment() {
         })
 
         return view
+    }
+
+    fun scrollInfinity(viewModel: MainViewModel){
+
+        binding.recyclerListPokemons.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                visibleItemCount = manager.childCount
+                totalItemCount = manager.itemCount
+                pastVisiblesItems = manager.findFirstCompletelyVisibleItemPosition()
+
+
+                if (loading){
+                    if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+
+                        loading = false
+                        auxContador+=1
+                        Log.e("...", auxContador.toString())
+
+                        if(auxContador == 10){
+
+                            auxOffSet+=auxContador
+                            viewModel.nextPokemons(auxOffSet)!!.observe(viewLifecycleOwner){ newValue ->
+                                pokemonAdapter.addData(newValue.results)
+                            }
+                            auxContador = 0
+                        }
+                        loading = true
+                    }
+                }
+            }
+        })
+
     }
 
     override fun onDestroyView() {

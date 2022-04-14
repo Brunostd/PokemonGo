@@ -41,7 +41,7 @@ class PokemonAdapter(var listPokemons: ArrayList<MoreResults>): RecyclerView.Ada
         holder.bind(listPokemons[position])
     }
 
-    fun setData(newList: ArrayList<MoreResults>){
+    fun addData(newList: ArrayList<MoreResults>){
         listPokemons.addAll(newList)
         notifyDataSetChanged()
     }

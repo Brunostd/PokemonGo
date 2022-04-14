@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +29,8 @@ class PokemonsFragment : Fragment() {
     private var _binding: FragmentPokemonsBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var viewModel: MainViewModel
+
     var auxContador: Int = 0
     var auxOffSet: Int = 0
 
@@ -38,7 +41,7 @@ class PokemonsFragment : Fragment() {
     var visibleItemCount: Int =0
     var totalItemCount: Int =0
     var pastVisiblesItems: Int =0
-    
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,21 +51,22 @@ class PokemonsFragment : Fragment() {
         _binding = FragmentPokemonsBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        viewModel.nextPokemons(auxOffSet)?.observe(viewLifecycleOwner){ value ->
+        if (savedInstanceState == null){
+            viewModel.nextPokemons(auxOffSet)
+            //binding.progressBar.visibility = View.GONE
+        }
 
+        viewModel.pokemonService?.observe(viewLifecycleOwner){ value ->
             binding.textViewTotalPokemons.text = value.count.toString()
             // RecyclerView
             manager = binding.recyclerListPokemons.layoutManager as LinearLayoutManager
             pokemonAdapter = PokemonAdapter(value.results)
             binding.recyclerListPokemons.adapter = pokemonAdapter
-
-            binding.progressBar.visibility = View.INVISIBLE
-
         }
 
-        scrollInfinity(viewModel)
+        scrollInfinity()
 
         binding.buttonProcurarPokemon.setOnClickListener(View.OnClickListener {
             var auxTextProcurarPokemon = binding.textProcurarPokemon.text.toString()
@@ -76,7 +80,7 @@ class PokemonsFragment : Fragment() {
         return view
     }
 
-    fun scrollInfinity(viewModel: MainViewModel){
+    fun scrollInfinity(){
 
         binding.recyclerListPokemons.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -96,13 +100,13 @@ class PokemonsFragment : Fragment() {
 
                         if(auxContador == 10){
 
-                            binding.progressBar.visibility = View.VISIBLE
+                            //binding.progressBar.visibility = View.VISIBLE
 
                             auxOffSet+=auxContador
-                            viewModel.nextPokemons(auxOffSet)!!.observe(viewLifecycleOwner){ newValue ->
-                                pokemonAdapter.addData(newValue.results)
+                            viewModel.nextPokemons(auxOffSet)
 
-                                binding.progressBar.visibility = View.INVISIBLE
+                            viewModel.pokemonService?.observe(viewLifecycleOwner){ newValue ->
+                                pokemonAdapter.addData(newValue.results)
                             }
                             auxContador = 0
                         }

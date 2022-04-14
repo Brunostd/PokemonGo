@@ -14,7 +14,7 @@ interface ApiService {
 
     @GET("pokemon")
     fun nextPokemons(
-        @Query("offset") totalPokemon: Int,
+        @Query("offset") offSetPokemon: Int,
         @Query("limit") limitPokemon: Int
         ): Call<PokemonModel>
 }

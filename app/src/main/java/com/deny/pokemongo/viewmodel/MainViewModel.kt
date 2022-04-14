@@ -10,6 +10,8 @@ class MainViewModel: ViewModel() {
 
     var pokemonService: MutableLiveData<PokemonModel>? = null
 
+    var pokemonModel: LiveData<PokemonModel>? = pokemonService
+
     fun nextPokemons(auxOffSet: Int) : LiveData<PokemonModel>?{
         pokemonService = PokemonRepository().getPokemons(auxOffSet)
         return pokemonService

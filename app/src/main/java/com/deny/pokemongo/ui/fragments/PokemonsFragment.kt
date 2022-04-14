@@ -58,6 +58,8 @@ class PokemonsFragment : Fragment() {
             pokemonAdapter = PokemonAdapter(value.results)
             binding.recyclerListPokemons.adapter = pokemonAdapter
 
+            binding.progressBar.visibility = View.INVISIBLE
+
         }
 
         scrollInfinity(viewModel)
@@ -71,7 +73,6 @@ class PokemonsFragment : Fragment() {
                 Toast.makeText(requireContext(), "Digite alguma coisa", Toast.LENGTH_SHORT).show()
             }
         })
-
         return view
     }
 
@@ -85,19 +86,23 @@ class PokemonsFragment : Fragment() {
                 totalItemCount = manager.itemCount
                 pastVisiblesItems = manager.findFirstCompletelyVisibleItemPosition()
 
-
                 if (loading){
                     if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
 
                         loading = false
                         auxContador+=1
-                        Log.e("...", auxContador.toString())
+
+                        //Log.e("...", auxContador.toString())
 
                         if(auxContador == 10){
+
+                            binding.progressBar.visibility = View.VISIBLE
 
                             auxOffSet+=auxContador
                             viewModel.nextPokemons(auxOffSet)!!.observe(viewLifecycleOwner){ newValue ->
                                 pokemonAdapter.addData(newValue.results)
+
+                                binding.progressBar.visibility = View.INVISIBLE
                             }
                             auxContador = 0
                         }

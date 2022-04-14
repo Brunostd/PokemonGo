@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/moise/AndroidStudioProjects/PokemonGo/app/src/main/res/layout/fragment_pokemons.xml" value="0.18541666666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_pokemons.xml" value="0.1703125" />
         <entry key="app/src/main/res/layout/fragment_selected_pokemon.xml" value="0.22" />
